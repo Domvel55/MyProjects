@@ -1,60 +1,65 @@
+import java.awt.BasicStroke;
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
-public class Window {
+public class Window extends JFrame{
 
 	JFrame window;
 	JPanel mainPane;
 	
-	ArrayList<ArrayList<JTextField>> sudokuArray;
+	ArrayList<SudokuBox> sudokuArray;
 	
 	public Window() {
 		
-		window = new JFrame("Sudoku");
 		mainPane = new JPanel();
-		sudokuArray = new ArrayList<ArrayList<JTextField>>(10);
-		for(int i = 0; i < 10; i++)
-			sudokuArray.add(new ArrayList<JTextField>());
+		sudokuArray = new ArrayList<SudokuBox>();
 		
 		createView();
 	}
 	
 	public void createView() {
 		
-		Font font = new Font("Arial", Font.CENTER_BASELINE, 18);
+		setTitle("Sudoku");
+		setSize(new Dimension(600,600));
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setResizable(false);
+		setVisible(true);
+		add(mainPane);
 		
-		window.setSize(new Dimension(600,600));
-		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		window.setResizable(false);
-		window.setVisible(true);
+		boxes();
+	}
+	
+	public void boxes() {
 		
-		window.add(mainPane);
+		
 		for(int i = 0; i < 9; i++) {
 			for(int j = 0; j < 9; j++) {
-				JTextField temp = new JTextField();
-				temp.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						
-						if(temp.getText() != null)
-							System.out.println(temp.getText());
-					}
-				});
+				SudokuBox temp = new SudokuBox(j+1, i+1);
 				mainPane.add(temp);
-				temp.setSize(new Dimension(50,50));
-				temp.setLocation(i*50, j*50);
-				temp.setFont(font);
-				temp.setHorizontalAlignment(JTextField.CENTER);
-				sudokuArray.get(i).add(temp);
+				temp.setSpecs(i, j);
+				sudokuArray.add(temp);
 			}
 		}
+	}
+	
+	public void paint(Graphics g) {
+		super.paint(g);
+		Graphics2D g2d = (Graphics2D) g;
+		g2d.setStroke(new BasicStroke(5));
+		Line2D line = new Line2D.Float(156, 0, 156, 480);
+		g2d.draw(line);
+		line = new Line2D.Float(306, 0, 306, 480);
+		g2d.draw(line);
+		line = new Line2D.Float(0, 185, 450, 185);
+		g2d.draw(line);
+		line = new Line2D.Float(0, 335, 450, 335);
+		g2d.draw(line);
 	}
 	
 	public static void main(String[] args) {
