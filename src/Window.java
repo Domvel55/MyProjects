@@ -19,7 +19,6 @@ public class Window extends JFrame{
 		
 		mainPane = new JPanel();
 		sudokuArray = new ArrayList<SudokuBox>();
-		
 		createView();
 	}
 	
@@ -31,7 +30,6 @@ public class Window extends JFrame{
 		setResizable(false);
 		setVisible(true);
 		add(mainPane);
-		
 		boxes();
 	}
 	
@@ -40,7 +38,7 @@ public class Window extends JFrame{
 		
 		for(int i = 0; i < 9; i++) {
 			for(int j = 0; j < 9; j++) {
-				SudokuBox temp = new SudokuBox(j+1, i+1);
+				SudokuBox temp = new SudokuBox(j, i);
 				mainPane.add(temp);
 				temp.setSpecs(i, j);
 				sudokuArray.add(temp);
@@ -60,10 +58,5 @@ public class Window extends JFrame{
 		g2d.draw(line);
 		line = new Line2D.Float(0, 335, 450, 335);
 		g2d.draw(line);
-	}
-	
-	public static void main(String[] args) {
-		
-		Window main = new Window();
 	}
 }
