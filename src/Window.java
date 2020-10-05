@@ -35,15 +35,45 @@ public class Window extends JFrame{
 	
 	public void boxes() {
 		
-		
 		for(int i = 0; i < 9; i++) {
 			for(int j = 0; j < 9; j++) {
 				SudokuBox temp = new SudokuBox(j, i);
 				mainPane.add(temp);
-				temp.setSpecs(i, j);
 				sudokuArray.add(temp);
+				temp.setSpecs();
 			}
 		}
+		nextAndPrevHelper();
+	}
+	
+	public void nextAndPrevHelper(){
+		
+		SudokuBox temp = null;
+		temp = finder(0, 0);
+		temp.setFirst(true);
+		for(int i = 1; i <= 81 ; i++) {
+			if(!(temp.getRow() == 0 && temp.getColumn() == 0)) {
+				if(temp.getColumn() == 0)
+					temp.setPrev(finder(temp.getRow()-1, 8));
+				else
+					temp.setPrev(finder(temp.getRow(), temp.getColumn()-1));
+			}
+			if(!(temp.getRow() == 8 && temp.getColumn() == 8)) {
+				if(temp.getColumn() == 8)
+					temp.setNext(finder(temp.getRow()+1, 0));
+				else
+					temp.setNext(finder(temp.getRow(), temp.getColumn()+1));
+			}
+			temp = temp.getNext();
+		}
+	}
+	
+	private SudokuBox finder(int row, int column) {
+		
+		for(SudokuBox sb: sudokuArray)
+			if(sb.getRow() == row && sb.getColumn() == column)
+				return sb;
+		return null;
 	}
 	
 	public void paint(Graphics g) {

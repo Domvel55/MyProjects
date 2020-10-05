@@ -11,10 +11,14 @@ public class SudokuBox extends JTextField {
 	int column;
 	int group;
 	int number;
+	int actual;
 	
-	ArrayList<Integer> rowNumbers;
-	ArrayList<Integer> columnNumbers;
-	ArrayList<Integer> groupNumbers;
+	boolean first;
+	
+	ArrayList<Integer> usedNums;
+	
+	SudokuBox prev;
+	SudokuBox next;
 	
 	private Font font = new Font("Arial", Font.CENTER_BASELINE, 18);
 	
@@ -22,9 +26,8 @@ public class SudokuBox extends JTextField {
 		this.row = row;
 		this.column = column;
 		this.group = groupHelper();
-		rowNumbers = new ArrayList<Integer>();
-		columnNumbers = new ArrayList<Integer>();
-		groupNumbers = new ArrayList<Integer>();
+		number = 0;
+		usedNums = new ArrayList<Integer>();
 	}
 	
 	public int getRow() {
@@ -43,47 +46,96 @@ public class SudokuBox extends JTextField {
 		return number;
 	}
 	
-	public ArrayList<Integer> getRowNumbers() {
-		return rowNumbers;
+	public int getActual() {
+		return actual;
 	}
 	
-	public ArrayList<Integer> getColumnNumbers() {
-		return columnNumbers;
+	public SudokuBox getPrev() {
+		return prev;
 	}
 	
-	public ArrayList<Integer> getGroupNumbers(){
-		return groupNumbers;
+	public SudokuBox getNext() {
+		return next;
+	}
+	
+	public boolean getFirst() {
+		return first;
+	}
+	
+	public int getBoxNumber() {
+		return row*9 + column;
+	}
+	
+	public ArrayList<Integer> getUsedNums(){
+		return usedNums;
+	}
+	
+	public void setPrev(SudokuBox prev) {
+		this.prev = prev;
+	}
+
+	public void setNext(SudokuBox next) {
+		this.next = next;
 	}
 	
 	public void setNumber(int number) {
 		this.number = number;
 	}
 	
+	public void setActual(int actual) {
+		this.actual = actual;
+	}
+	
+	public void setFirst(boolean first) {
+		this.first = first;
+	}
+	
+	public boolean hasPrev() {
+		return prev != null ? true : false;
+	}
+	
+	public boolean hasNext() {
+		return next != null ? true : false;
+	}
+	
+	public void clearUsedNums() {
+		usedNums.clear();
+	}
+	
 	public int groupHelper() {
 		return column/3 + ((row/3)*3);
 	}
 
-	public void setSpecs(int i, int j) {
+	public void setSpecs() {
 		addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
-				if(Character.isDigit(getText().charAt(0)) && getText().length() == 1) {
-					
+				if(getText().length() == 1 && Character.isDigit(getText().charAt(0)))
 					actionCalls();
+				if(getText().length() == 1 && Integer.parseInt(getText()) == 0) {
+						removeCalls();
+						setText("");
 				}
 			}
 		});
-		setBounds(i*50, j*50, 45, 45);
+		setBounds(column*50, row*50, 45, 45);
 		setFont(font);
 		setHorizontalAlignment(JTextField.CENTER);
 	}
 	
-	public void actionCalls() {
+	private void actionCalls() {
 		
-		setNumber(Integer.parseInt(getText()));
-		System.out.println(getText());
-		System.out.println(row + " " + column + " " + group);
-		System.out.println(Game.isValid(Integer.parseInt(getText())));
-		Game.setArrays(this);
+		System.out.println(row + " " + column);
+		if(hasPrev())
+			System.out.println("Prev: " + (prev.getRow()+1) + " " + (prev.getColumn()+1));
+		if(hasNext())
+			System.out.println("Next: " + (next.getRow()+1) + " " + (next.getColumn()+1));
+		number = Integer.parseInt(getText());
+		System.out.println("----------------------");
+	}
+	
+	private void removeCalls() {
+		
+		number = 0;
 	}
 }
