@@ -1,17 +1,22 @@
 import java.awt.BasicStroke;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class Window extends JFrame{
 
 	JFrame window;
-	JPanel mainPane;
+	static JPanel mainPane;
+	JButton solveButton;
 	
 	ArrayList<SudokuBox> sudokuArray;
 	
@@ -19,6 +24,7 @@ public class Window extends JFrame{
 		
 		mainPane = new JPanel();
 		sudokuArray = new ArrayList<SudokuBox>();
+		new Thread(new Updater()).start();
 		createView();
 	}
 	
@@ -30,14 +36,31 @@ public class Window extends JFrame{
 		setResizable(false);
 		setVisible(true);
 		add(mainPane);
+		buttons();
 		boxes();
 	}
 	
-	public void boxes() {
+	private void buttons() {
+		
+		solveButton = new JButton("Solve");
+		solveButton.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				
+				Game.createAnswers();
+				displayAnswers();
+			}
+		});
+		solveButton.setBounds(475, 100, 100, 25);
+		solveButton.setFont(new Font("Arial", Font.CENTER_BASELINE, 18));
+		mainPane.add(solveButton);
+	}
+	
+	private void boxes() {
 		
 		for(int i = 0; i < 9; i++) {
 			for(int j = 0; j < 9; j++) {
-				SudokuBox temp = new SudokuBox(j, i);
+				SudokuBox temp = new SudokuBox(i, j);
 				mainPane.add(temp);
 				sudokuArray.add(temp);
 				temp.setSpecs();
@@ -46,7 +69,7 @@ public class Window extends JFrame{
 		nextAndPrevHelper();
 	}
 	
-	public void nextAndPrevHelper(){
+	private void nextAndPrevHelper(){
 		
 		SudokuBox temp = null;
 		temp = finder(0, 0);
@@ -76,6 +99,19 @@ public class Window extends JFrame{
 		return null;
 	}
 	
+	private void displayAnswers() {
+		
+		for(SudokuBox sb: sudokuArray)
+			sb.displayAnswer();
+	}
+
+	private void update() {
+		
+		repaint();
+		for(SudokuBox sb: sudokuArray)
+			sb.update();
+	}
+	
 	public void paint(Graphics g) {
 		super.paint(g);
 		Graphics2D g2d = (Graphics2D) g;
@@ -88,5 +124,18 @@ public class Window extends JFrame{
 		g2d.draw(line);
 		line = new Line2D.Float(0, 335, 450, 335);
 		g2d.draw(line);
+	}
+	
+	class Updater implements Runnable{
+
+		public void run() {
+			while(true) {
+				try {
+					Thread.sleep(500);
+					update();
+				}
+				catch(InterruptedException e) {}
+			}
+		}
 	}
 }

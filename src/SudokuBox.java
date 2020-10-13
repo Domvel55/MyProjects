@@ -14,6 +14,7 @@ public class SudokuBox extends JTextField {
 	int actual;
 	
 	boolean first;
+	boolean solved;
 	
 	ArrayList<Integer> usedNums;
 	
@@ -27,7 +28,9 @@ public class SudokuBox extends JTextField {
 		this.column = column;
 		this.group = groupHelper();
 		number = 0;
+		actual = 0;
 		usedNums = new ArrayList<Integer>();
+		solved = false;
 	}
 	
 	public int getRow() {
@@ -64,6 +67,10 @@ public class SudokuBox extends JTextField {
 	
 	public int getBoxNumber() {
 		return row*9 + column;
+	}
+	
+	public boolean solved() {
+		return solved;
 	}
 	
 	public ArrayList<Integer> getUsedNums(){
@@ -105,37 +112,40 @@ public class SudokuBox extends JTextField {
 	public int groupHelper() {
 		return column/3 + ((row/3)*3);
 	}
+	
+	public void displayAnswer() {
+		setText("" + actual);
+	}
+	
+	private void correctAnswer() {
+		
+		solved = true;
+		Window.mainPane.remove(this);
+		AnswerLabel temp = new AnswerLabel(row, column, group, actual);
+		temp.setSpecs();
+	}
+	
+	public void update() {
+		
+		if(getText().length() == 1 && Character.isDigit(getText().charAt(0))) {
+			int temp = Integer.parseInt(getText());
+			if(actual == 0)
+				actual = temp;
+			else if(temp == actual)
+				correctAnswer();
+			else
+				setText("");
+			
+		}
+		if(getText().length() == 1 && Integer.parseInt(getText()) == 0) {
+			number = 0;
+			setText("");
+		}
+	}
 
 	public void setSpecs() {
-		addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				
-				if(getText().length() == 1 && Character.isDigit(getText().charAt(0)))
-					actionCalls();
-				if(getText().length() == 1 && Integer.parseInt(getText()) == 0) {
-						removeCalls();
-						setText("");
-				}
-			}
-		});
 		setBounds(column*50, row*50, 45, 45);
 		setFont(font);
 		setHorizontalAlignment(JTextField.CENTER);
-	}
-	
-	private void actionCalls() {
-		
-		System.out.println(row + " " + column);
-		if(hasPrev())
-			System.out.println("Prev: " + (prev.getRow()+1) + " " + (prev.getColumn()+1));
-		if(hasNext())
-			System.out.println("Next: " + (next.getRow()+1) + " " + (next.getColumn()+1));
-		number = Integer.parseInt(getText());
-		System.out.println("----------------------");
-	}
-	
-	private void removeCalls() {
-		
-		number = 0;
 	}
 }

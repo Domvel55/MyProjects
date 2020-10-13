@@ -11,24 +11,24 @@ public class Game {
 		
 		window = new Window();
 		actualAnswers = new ArrayList<Integer>();
-		createAnswers();
-		printAnswers();
 	}
+	
+	
 	
 	public static boolean isValid(SudokuBox sb) {
 		
 		for(SudokuBox other: window.sudokuArray) {
 			if(sb == other) {}
 			else if(sb.getRow() == other.getRow()) {
-				if(sb.getNumber() == other.getNumber() && other.getNumber() != 0)
+				if(sb.getActual() == other.getActual() && other.getActual() != 0)
 					return false;
 			}
 		    else if(sb.getColumn() == other.getColumn()) {
-				if(sb.getNumber() == other.getNumber() && other.getNumber() != 0)
+				if(sb.getActual() == other.getActual() && other.getActual() != 0)
 					return false;
 		    }
 			else if(sb.getGroup() == other.getGroup()) {
-				if(sb.getNumber() == other.getNumber() && other.getNumber() != 0)
+				if(sb.getActual() == other.getActual() && other.getActual() != 0)
 					return false;
 			}
 		}
@@ -46,44 +46,50 @@ public class Game {
 			if(temp.getFirst())
 				sb = temp;
 		while(!done) {
-			if(sb != null && sb.hasPrev())
-				sbMinus1 = sb.getPrev();
-			int randNum = rand.nextInt(9)+1;
-			while(sb != null && sb.getUsedNums().contains(randNum)) {
-				if(sb.getUsedNums().size() == 9) {
-					sb.setNumber(0);
-					sb.clearUsedNums();
-					if(sb.hasPrev()) {
-						sbMinus1.setNumber(0);
-						sb = sbMinus1;
+			if(!sb.solved()) {	
+				if(sb != null && sb.hasPrev())
+					if(sb.getPrev().solved())
+						sbMinus1 = sb.getPrev().getPrev();
+					sbMinus1 = sb.getPrev();
+				int randNum = rand.nextInt(9)+1;
+				while(sb != null && sb.getUsedNums().contains(randNum)) {
+					if(sb.getUsedNums().size() == 9) {
+						sb.setActual(0);
+						sb.clearUsedNums();
+						if(sb.hasPrev()) {
+							sbMinus1.setActual(0);
+							sb = sbMinus1;
+						}
 					}
-				}
-				else
-					randNum = rand.nextInt(9)+1;
-			}
-			if(sb != null) {
-				sb.setNumber(randNum);
-				timesRan++;
-				if(timesRan%10 == 0)
-					System.out.println(timesRan + " " + sb.getBoxNumber());
-				if(isValid(sb)) {
-					sb.getUsedNums().add(sb.getNumber());
-					if(sb.hasNext())
-						sb = sb.getNext();
 					else
-						done = true;
+						randNum = rand.nextInt(9)+1;
 				}
-				else 
-					sb.getUsedNums().add(sb.getNumber());
+				if(sb != null) {
+					sb.setActual(randNum);
+					timesRan++;
+					if(timesRan%1000000 == 0)
+						System.out.println(timesRan + " " + (sb.getRow()*3 + sb.getColumn()*3));
+					if(isValid(sb)) {
+						sb.getUsedNums().add(sb.getActual());
+						if(sb.hasNext())
+							sb = sb.getNext();
+						else
+							done = true;
+					}
+					else 
+						sb.getUsedNums().add(sb.getActual());
+				}
 			}
+			else
+				sb = sb.getNext();
 		}
-		System.out.println("Done");
+		printAnswers();
 	}
 	
 	public static void printAnswers() {
 		
 		for(SudokuBox sb: window.sudokuArray)
-			actualAnswers.add(sb.getNumber());
+			actualAnswers.add(sb.getActual());
 		for(int i = 0; i < 81; i++) {
 			if(i%9 == 0)
 				System.out.println();
